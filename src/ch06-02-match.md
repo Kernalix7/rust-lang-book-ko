@@ -1,30 +1,16 @@
-<!-- Old heading. Do not remove or links may break. -->
+<!-- 이전 제목. 삭제하지 마세요. 링크가 깨질 수 있습니다. -->
 
 <a id="the-match-control-flow-operator"></a>
 
-## The `match` Control Flow Construct
+## `match` 제어 흐름 구조
 
-Rust has an extremely powerful control flow construct called `match` that
-allows you to compare a value against a series of patterns and then execute
-code based on which pattern matches. Patterns can be made up of literal values,
-variable names, wildcards, and many other things; [Chapter
-19][ch19-00-patterns]<!-- ignore --> covers all the different kinds of patterns
-and what they do. The power of `match` comes from the expressiveness of the
-patterns and the fact that the compiler confirms that all possible cases are
-handled.
+러스트에는 매우 강력한 제어 흐름 구조인 `match`가 있습니다. `match`는 값을 여러 패턴과 비교한 뒤, 어떤 패턴과 일치하는지에 따라 코드를 실행할 수 있게 해줍니다. 패턴은 리터럴 값, 변수 이름, 와일드카드 등 다양한 형태로 만들 수 있습니다. [19장][ch19-00-patterns]<!-- ignore -->에서는 패턴의 종류와 동작을 더 자세히 다룹니다. `match`의 강점은 패턴의 표현력과, 컴파일러가 모든 가능한 경우를 반드시 처리하도록 확인해 준다는 점에 있습니다.
 
-Think of a `match` expression as being like a coin-sorting machine: coins slide
-down a track with variously sized holes along it, and each coin falls through
-the first hole it encounters that it fits into. In the same way, values go
-through each pattern in a `match`, and at the first pattern the value “fits,”
-the value falls into the associated code block to be used during execution.
+`match` 표현식은 동전 분류기를 떠올리면 이해하기 쉽습니다: 동전이 여러 크기의 구멍이 있는 트랙을 따라 내려가다가, 처음으로 맞는 구멍을 만나면 그 구멍으로 떨어집니다. 마찬가지로, 값이 각 패턴을 차례로 비교하다가 처음으로 "맞는" 패턴을 만나면, 그 패턴에 연결된 코드 블록이 실행됩니다.
 
-Speaking of coins, let’s use them as an example using `match`! We can write a
-function that takes an unknown US coin and, in a similar way as the counting
-machine, determines which coin it is and returns its value in cents, as shown
-in Listing 6-3.
+동전을 예로 들어, `match`를 활용해 보겠습니다! 미국 동전을 받아서, 동전의 종류에 따라 센트 값을 반환하는 함수를 아래 Listing 6-3처럼 작성할 수 있습니다.
 
-<Listing number="6-3" caption="An enum and a `match` expression that has the variants of the enum as its patterns">
+<Listing number="6-3" caption="열거형의 변형을 패턴으로 사용하는 `enum`과 `match` 표현식">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-03/src/main.rs:here}}
@@ -32,53 +18,27 @@ in Listing 6-3.
 
 </Listing>
 
-Let’s break down the `match` in the `value_in_cents` function. First we list
-the `match` keyword followed by an expression, which in this case is the value
-`coin`. This seems very similar to a conditional expression used with `if`, but
-there’s a big difference: with `if`, the condition needs to evaluate to a
-Boolean value, but here it can be any type. The type of `coin` in this example
-is the `Coin` enum that we defined on the first line.
+`value_in_cents` 함수의 `match`를 자세히 살펴봅시다. 먼저 `match` 키워드와 그 뒤에 비교할 표현식(여기서는 `coin` 값)을 작성합니다. 이는 `if`와 비슷해 보이지만, 중요한 차이가 있습니다: `if`의 조건은 반드시 불리언이어야 하지만, 여기서는 어떤 타입이든 가능합니다. 이 예시에서 `coin`의 타입은 우리가 첫 줄에 정의한 `Coin` 열거형입니다.
 
-Next are the `match` arms. An arm has two parts: a pattern and some code. The
-first arm here has a pattern that is the value `Coin::Penny` and then the `=>`
-operator that separates the pattern and the code to run. The code in this case
-is just the value `1`. Each arm is separated from the next with a comma.
+다음은 `match`의 팔(arm)입니다. 팔은 패턴과 코드로 이루어집니다. 첫 번째 팔의 패턴은 `Coin::Penny`이고, `=>` 연산자로 패턴과 실행할 코드를 구분합니다. 여기서는 단순히 값 `1`을 반환합니다. 각 팔은 쉼표로 구분합니다.
 
-When the `match` expression executes, it compares the resultant value against
-the pattern of each arm, in order. If a pattern matches the value, the code
-associated with that pattern is executed. If that pattern doesn’t match the
-value, execution continues to the next arm, much as in a coin-sorting machine.
-We can have as many arms as we need: in Listing 6-3, our `match` has four arms.
+`match` 표현식이 실행되면, 값과 각 팔의 패턴을 차례로 비교합니다. 패턴이 값과 일치하면, 해당 패턴에 연결된 코드가 실행됩니다. 일치하지 않으면 다음 팔로 넘어갑니다. 동전 분류기와 마찬가지로, 첫 번째로 맞는 패턴에서 실행이 멈춥니다.
 
-The code associated with each arm is an expression, and the resultant value of
-the expression in the matching arm is the value that gets returned for the
-entire `match` expression.
+팔에 연결된 코드는 표현식이며, 일치한 팔의 표현식 결과가 전체 `match` 표현식의 반환값이 됩니다.
 
-We don’t typically use curly brackets if the match arm code is short, as it is
-in Listing 6-3 where each arm just returns a value. If you want to run multiple
-lines of code in a match arm, you must use curly brackets, and the comma
-following the arm is then optional. For example, the following code prints
-“Lucky penny!” every time the method is called with a `Coin::Penny`, but still
-returns the last value of the block, `1`:
+팔의 코드가 짧을 때는 중괄호를 생략하는 것이 일반적입니다. Listing 6-3처럼 각 팔이 값을 반환하는 경우가 그렇습니다. 여러 줄의 코드를 실행하려면 중괄호를 사용해야 하며, 이때는 팔 뒤의 쉼표가 선택적입니다. 예를 들어, 아래 코드는 `Coin::Penny`가 들어오면 "Lucky penny!"를 출력하고, 마지막 값인 `1`을 반환합니다:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-08-match-arm-multiple-lines/src/main.rs:here}}
 ```
 
-### Patterns That Bind to Values
+### 값에 바인딩하는 패턴
 
-Another useful feature of match arms is that they can bind to the parts of the
-values that match the pattern. This is how we can extract values out of enum
-variants.
+`match` 팔의 또 다른 유용한 기능은, 패턴이 일치한 값의 일부를 변수에 바인딩할 수 있다는 점입니다. 이를 통해 열거형 변형 안의 값을 꺼낼 수 있습니다.
 
-As an example, let’s change one of our enum variants to hold data inside it.
-From 1999 through 2008, the United States minted quarters with different
-designs for each of the 50 states on one side. No other coins got state
-designs, so only quarters have this extra value. We can add this information to
-our `enum` by changing the `Quarter` variant to include a `UsState` value
-stored inside it, which we’ve done in Listing 6-4.
+예를 들어, 열거형 변형 중 하나에 데이터를 넣어봅시다. 1999년부터 2008년까지 미국에서는 50개 주마다 다른 디자인의 쿼터 동전을 발행했습니다. 다른 동전에는 주 디자인이 없으므로, 쿼터만 추가 정보를 가집니다. 아래 Listing 6-4처럼, `Quarter` 변형에 `UsState` 값을 넣어 정보를 추가할 수 있습니다.
 
-<Listing number="6-4" caption="A `Coin` enum in which the `Quarter` variant also holds a `UsState` value">
+<Listing number="6-4" caption="`Quarter` 변형에 `UsState` 값을 포함하는 `Coin` 열거형">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-04/src/main.rs:here}}
@@ -86,44 +46,25 @@ stored inside it, which we’ve done in Listing 6-4.
 
 </Listing>
 
-Let’s imagine that a friend is trying to collect all 50 state quarters. While
-we sort our loose change by coin type, we’ll also call out the name of the
-state associated with each quarter so that if it’s one our friend doesn’t have,
-they can add it to their collection.
+친구가 50개 주의 쿼터를 모두 모으고 싶어한다고 가정해 봅시다. 동전을 종류별로 분류하면서, 쿼터가 나오면 해당 주 이름을 불러주어 친구가 없는 주라면 수집할 수 있게 해줍니다.
 
-In the match expression for this code, we add a variable called `state` to the
-pattern that matches values of the variant `Coin::Quarter`. When a
-`Coin::Quarter` matches, the `state` variable will bind to the value of that
-quarter’s state. Then we can use `state` in the code for that arm, like so:
+이 코드의 `match` 표현식에서는, `Coin::Quarter` 변형에 일치하는 패턴에 `state`라는 변수를 추가했습니다. 만약 값이 `Coin::Quarter`라면, `state` 변수에 해당 쿼터의 주 정보가 바인딩됩니다. 이제 `state`를 팔의 코드에서 사용할 수 있습니다:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-09-variable-in-pattern/src/main.rs:here}}
 ```
 
-If we were to call `value_in_cents(Coin::Quarter(UsState::Alaska))`, `coin`
-would be `Coin::Quarter(UsState::Alaska)`. When we compare that value with each
-of the match arms, none of them match until we reach `Coin::Quarter(state)`. At
-that point, the binding for `state` will be the value `UsState::Alaska`. We can
-then use that binding in the `println!` expression, thus getting the inner
-state value out of the `Coin` enum variant for `Quarter`.
+예를 들어, `value_in_cents(Coin::Quarter(UsState::Alaska))`를 호출하면, `coin`은 `Coin::Quarter(UsState::Alaska)`가 됩니다. 각 팔의 패턴과 비교하다가, `Coin::Quarter(state)`에서 일치합니다. 이때 `state`에는 `UsState::Alaska`가 바인딩됩니다. 이제 `println!`에서 `state` 값을 사용할 수 있으므로, 쿼터 변형 안의 주 정보를 꺼낼 수 있습니다.
 
-### Matching with `Option<T>`
+### `Option<T>`와 매칭하기
 
-In the previous section, we wanted to get the inner `T` value out of the `Some`
-case when using `Option<T>`; we can also handle `Option<T>` using `match`, as
-we did with the `Coin` enum! Instead of comparing coins, we’ll compare the
-variants of `Option<T>`, but the way the `match` expression works remains the
-same.
+앞 절에서는 `Option<T>`의 `Some` 변형 안의 값을 꺼내고 싶었습니다. `Option<T>`도 `match`로 처리할 수 있습니다. 동전을 비교하는 대신, `Option<T>`의 변형을 비교하지만, `match`의 동작 방식은 동일합니다.
 
-Let’s say we want to write a function that takes an `Option<i32>` and, if
-there’s a value inside, adds 1 to that value. If there isn’t a value inside,
-the function should return the `None` value and not attempt to perform any
-operations.
+예를 들어, `Option<i32>`를 받아 값이 있으면 1을 더하고, 값이 없으면 그대로 `None`을 반환하는 함수를 작성한다고 가정해 봅시다.
 
-This function is very easy to write, thanks to `match`, and will look like
-Listing 6-5.
+이 함수는 `match` 덕분에 매우 쉽게 작성할 수 있으며, 아래 Listing 6-5와 같습니다.
 
-<Listing number="6-5" caption="A function that uses a `match` expression on an `Option<i32>`">
+<Listing number="6-5" caption="`Option<i32>`에 대해 `match` 표현식을 사용하는 함수">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:here}}
@@ -131,129 +72,77 @@ Listing 6-5.
 
 </Listing>
 
-Let’s examine the first execution of `plus_one` in more detail. When we call
-`plus_one(five)`, the variable `x` in the body of `plus_one` will have the
-value `Some(5)`. We then compare that against each match arm:
+첫 번째로 `plus_one(five)`를 실행하면, 함수 내부의 `x`는 `Some(5)` 값을 가집니다. 이제 각 팔과 비교합니다:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
 ```
 
-The `Some(5)` value doesn’t match the pattern `None`, so we continue to the
-next arm:
+`Some(5)`는 `None` 패턴과 일치하지 않으므로, 다음 팔로 넘어갑니다:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:second_arm}}
 ```
 
-Does `Some(5)` match `Some(i)`? It does! We have the same variant. The `i`
-binds to the value contained in `Some`, so `i` takes the value `5`. The code in
-the match arm is then executed, so we add 1 to the value of `i` and create a
-new `Some` value with our total `6` inside.
+`Some(5)`는 `Some(i)` 패턴과 일치합니다! 같은 변형이므로, `i`에 `Some` 안의 값인 `5`가 바인딩됩니다. 이제 팔의 코드가 실행되어, `i`에 1을 더한 뒤, 새로운 `Some` 값에 결과(`6`)를 넣어 반환합니다.
 
-Now let’s consider the second call of `plus_one` in Listing 6-5, where `x` is
-`None`. We enter the `match` and compare to the first arm:
+Listing 6-5의 두 번째 호출에서는, `x`가 `None`입니다. `match`에 들어가서 첫 번째 팔과 비교합니다:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
 ```
 
-It matches! There’s no value to add to, so the program stops and returns the
-`None` value on the right side of `=>`. Because the first arm matched, no other
-arms are compared.
+이번에는 일치합니다! 더할 값이 없으므로, 오른쪽의 `None` 값을 반환하고, 프로그램은 멈춥니다. 첫 번째 팔이 일치했으므로, 다른 팔은 비교하지 않습니다.
 
-Combining `match` and enums is useful in many situations. You’ll see this
-pattern a lot in Rust code: `match` against an enum, bind a variable to the
-data inside, and then execute code based on it. It’s a bit tricky at first, but
-once you get used to it, you’ll wish you had it in all languages. It’s
-consistently a user favorite.
+열거형과 `match`를 결합하면 다양한 상황을 쉽게 처리할 수 있습니다. 러스트 코드에서는 이런 패턴을 자주 보게 됩니다: 열거형을 `match`로 비교하고, 내부 데이터를 변수에 바인딩한 뒤, 그 값에 따라 코드를 실행합니다. 처음에는 다소 복잡하게 느껴질 수 있지만, 익숙해지면 모든 언어에 있었으면 좋겠다고 느낄 만큼 강력한 기능입니다. 러스트 사용자들이 특히 좋아하는 기능이기도 합니다.
 
-### Matches Are Exhaustive
+### `match`는 반드시 모든 경우를 처리해야 한다
 
-There’s one other aspect of `match` we need to discuss: the arms’ patterns must
-cover all possibilities. Consider this version of our `plus_one` function,
-which has a bug and won’t compile:
+`match`의 또 다른 중요한 특징은, 팔의 패턴이 모든 가능한 경우를 반드시 처리해야 한다는 점입니다. 예를 들어, 아래처럼 버그가 있는 `plus_one` 함수는 컴파일되지 않습니다:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-10-non-exhaustive-match/src/main.rs:here}}
 ```
 
-We didn’t handle the `None` case, so this code will cause a bug. Luckily, it’s
-a bug Rust knows how to catch. If we try to compile this code, we’ll get this
-error:
+`None` 경우를 처리하지 않았으므로, 이 코드는 버그를 유발합니다. 다행히도, 러스트는 이런 버그를 잡아낼 수 있습니다. 컴파일하면 다음과 같은 에러가 발생합니다:
 
 ```console
 {{#include ../listings/ch06-enums-and-pattern-matching/no-listing-10-non-exhaustive-match/output.txt}}
 ```
 
-Rust knows that we didn’t cover every possible case, and even knows which
-pattern we forgot! Matches in Rust are _exhaustive_: we must exhaust every last
-possibility in order for the code to be valid. Especially in the case of
-`Option<T>`, when Rust prevents us from forgetting to explicitly handle the
-`None` case, it protects us from assuming that we have a value when we might
-have null, thus making the billion-dollar mistake discussed earlier impossible.
+러스트는 모든 가능한 경우를 처리하지 않았음을 알려주며, 어떤 패턴을 빠뜨렸는지도 알려줍니다! 러스트의 `match`는 _완전성(exhaustiveness)_을 요구합니다: 모든 경우를 반드시 처리해야만 코드가 유효합니다. 특히 `Option<T>`의 경우, 러스트가 `None`을 반드시 처리하도록 강제하므로, 값이 있다고 잘못 가정하는 실수를 방지할 수 있습니다. 앞서 언급한 10억 달러짜리 실수를 러스트에서는 원천적으로 막을 수 있습니다.
 
-### Catch-All Patterns and the `_` Placeholder
+### 포괄 패턴과 `_` 플레이스홀더
 
-Using enums, we can also take special actions for a few particular values, but
-for all other values take one default action. Imagine we’re implementing a game
-where, if you roll a 3 on a dice roll, your player doesn’t move, but instead
-gets a new fancy hat. If you roll a 7, your player loses a fancy hat. For all
-other values, your player moves that number of spaces on the game board. Here’s
-a `match` that implements that logic, with the result of the dice roll
-hardcoded rather than a random value, and all other logic represented by
-functions without bodies because actually implementing them is out of scope for
-this example:
+열거형을 사용할 때, 특정 값에만 특별한 동작을 하고, 나머지 값에는 기본 동작을 하고 싶을 때가 있습니다. 예를 들어, 주사위를 굴려 3이 나오면 플레이어가 움직이지 않고 멋진 모자를 얻고, 7이 나오면 모자를 잃고, 그 외에는 나온 숫자만큼 이동한다고 가정해 봅시다. 아래 코드는 이런 로직을 `match`로 구현합니다. 주사위 결과는 하드코딩되어 있고, 실제 동작은 함수 이름만 있고 본문은 생략했습니다:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-15-binding-catchall/src/main.rs:here}}
 ```
 
-For the first two arms, the patterns are the literal values `3` and `7`. For
-the last arm that covers every other possible value, the pattern is the
-variable we’ve chosen to name `other`. The code that runs for the `other` arm
-uses the variable by passing it to the `move_player` function.
+첫 두 팔의 패턴은 리터럴 값 `3`과 `7`입니다. 마지막 팔은 모든 다른 값을 처리하며, 패턴에 변수 이름 `other`를 사용합니다. 이 팔의 코드는 `other` 값을 `move_player` 함수에 넘깁니다.
 
-This code compiles, even though we haven’t listed all the possible values a
-`u8` can have, because the last pattern will match all values not specifically
-listed. This catch-all pattern meets the requirement that `match` must be
-exhaustive. Note that we have to put the catch-all arm last because the
-patterns are evaluated in order. If we put the catch-all arm earlier, the other
-arms would never run, so Rust will warn us if we add arms after a catch-all!
+이 코드는 모든 가능한 `u8` 값을 나열하지 않아도 컴파일됩니다. 마지막 팔의 패턴이 나머지 모든 값을 처리하기 때문입니다. 이 포괄 패턴 덕분에 `match`의 완전성 요구를 만족합니다. 포괄 팔은 반드시 마지막에 와야 합니다. 패턴은 순서대로 평가되므로, 포괄 팔이 먼저 나오면 다른 팔이 실행되지 않으므로, 러스트가 경고를 표시합니다.
 
-Rust also has a pattern we can use when we want a catch-all but don’t want to
-_use_ the value in the catch-all pattern: `_` is a special pattern that matches
-any value and does not bind to that value. This tells Rust we aren’t going to
-use the value, so Rust won’t warn us about an unused variable.
+포괄 패턴에서 값을 사용하지 않을 때는 `_`라는 특별한 패턴을 사용할 수 있습니다. `_`는 어떤 값이든 일치하지만, 그 값을 바인딩하지 않습니다. 즉, 값을 사용하지 않을 것임을 러스트에 명확히 알릴 수 있습니다.
 
-Let’s change the rules of the game: now, if you roll anything other than a 3 or
-a 7, you must roll again. We no longer need to use the catch-all value, so we
-can change our code to use `_` instead of the variable named `other`:
+게임 규칙을 바꿔서, 3이나 7이 아닌 값이 나오면 다시 굴려야 한다고 가정해 봅시다. 이제 포괄 패턴의 값을 사용할 필요가 없으므로, 변수 대신 `_`를 사용할 수 있습니다:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-16-underscore-catchall/src/main.rs:here}}
 ```
 
-This example also meets the exhaustiveness requirement because we’re explicitly
-ignoring all other values in the last arm; we haven’t forgotten anything.
+이 예시도 완전성 요구를 만족합니다. 마지막 팔에서 나머지 모든 값을 명시적으로 무시하므로, 빠뜨린 경우가 없습니다.
 
-Finally, we’ll change the rules of the game one more time so that nothing else
-happens on your turn if you roll anything other than a 3 or a 7. We can express
-that by using the unit value (the empty tuple type we mentioned in [“The Tuple
-Type”][tuples]<!-- ignore --> section) as the code that goes with the `_` arm:
+마지막으로, 게임 규칙을 또 바꿔서 3이나 7이 아닌 값이 나오면 아무 일도 일어나지 않게 한다고 가정해 봅시다. 이때는 `_` 팔에 유닛 값(빈 튜플 타입)을 코드로 넣으면 됩니다:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-17-underscore-unit/src/main.rs:here}}
 ```
 
-Here, we’re telling Rust explicitly that we aren’t going to use any other value
-that doesn’t match a pattern in an earlier arm, and we don’t want to run any
-code in this case.
+이 코드는, 앞선 팔에 일치하지 않는 값이 들어오면 아무 코드도 실행하지 않겠다는 뜻을 러스트에 명확히 알립니다.
 
-There’s more about patterns and matching that we’ll cover in [Chapter
-19][ch19-00-patterns]<!-- ignore -->. For now, we’re going to move on to the
-`if let` syntax, which can be useful in situations where the `match` expression
-is a bit wordy.
+패턴과 매칭에 대해서는 [19장][ch19-00-patterns]<!-- ignore -->에서 더 자세히 다룹니다. 지금은 `match` 표현식이 너무 장황할 때 유용한 `if let` 문법을 배워봅시다.
 
 [tuples]: ch03-02-data-types.html#the-tuple-type
 [ch19-00-patterns]: ch19-00-patterns.html

@@ -1,48 +1,15 @@
-# Managing Growing Projects with Packages, Crates, and Modules
+# 패키지, 크레이트, 모듈로 커져가는 프로젝트 관리하기
 
-As you write large programs, organizing your code will become increasingly
-important. By grouping related functionality and separating code with distinct
-features, you’ll clarify where to find code that implements a particular
-feature and where to go to change how a feature works.
+러스트 프로젝트가 점점 커지면, 코드를 체계적으로 관리하고, 여러 파일로 분리하며, 공개 API와 비공개 구현을 구분하는 것이 중요해집니다. 이번 장에서는 러스트의 패키지, 크레이트, 모듈 시스템을 활용해 프로젝트를 잘 조직하는 방법을 배웁니다.
 
-The programs we’ve written so far have been in one module in one file. As a
-project grows, you should organize code by splitting it into multiple modules
-and then multiple files. A package can contain multiple binary crates and
-optionally one library crate. As a package grows, you can extract parts into
-separate crates that become external dependencies. This chapter covers all
-these techniques. For very large projects comprising a set of interrelated
-packages that evolve together, Cargo provides _workspaces_, which we’ll cover
-in [“Cargo Workspaces”][workspaces]<!-- ignore --> in Chapter 14.
+러스트에서는 코드를 논리적으로 묶고, 범위와 접근성을 제어하며, 여러 파일로 분리할 수 있는 다양한 기능을 제공합니다. 패키지는 여러 크레이트를 포함할 수 있고, 크레이트는 러스트의 컴파일 단위입니다. 모듈은 크레이트 내부에서 코드의 범위와 공개/비공개를 관리하는 데 사용됩니다.
 
-We’ll also discuss encapsulating implementation details, which lets you reuse
-code at a higher level: once you’ve implemented an operation, other code can
-call your code via its public interface without having to know how the
-implementation works. The way you write code defines which parts are public for
-other code to use and which parts are private implementation details that you
-reserve the right to change. This is another way to limit the amount of detail
-you have to keep in your head.
+이번 장에서는 다음 내용을 다룹니다:
 
-A related concept is scope: the nested context in which code is written has a
-set of names that are defined as “in scope.” When reading, writing, and
-compiling code, programmers and compilers need to know whether a particular
-name at a particular spot refers to a variable, function, struct, enum, module,
-constant, or other item and what that item means. You can create scopes and
-change which names are in or out of scope. You can’t have two items with the
-same name in the same scope; tools are available to resolve name conflicts.
+- 패키지와 크레이트의 개념과 역할
+- 모듈을 정의하여 범위와 접근 제어하기
+- 모듈 트리의 항목을 참조하기 위한 경로(path)
+- `use` 키워드로 경로를 범위로 가져오는 방법
+- 모듈을 여러 파일로 분리하여 관리하는 방법
 
-Rust has a number of features that allow you to manage your code’s
-organization, including which details are exposed, which details are private,
-and what names are in each scope in your programs. These features, sometimes
-collectively referred to as the _module system_, include:
-
-* **Packages**: A Cargo feature that lets you build, test, and share crates
-* **Crates**: A tree of modules that produces a library or executable
-* **Modules and use**: Let you control the organization, scope, and privacy of
-paths
-* **Paths**: A way of naming an item, such as a struct, function, or module
-
-In this chapter, we’ll cover all these features, discuss how they interact, and
-explain how to use them to manage scope. By the end, you should have a solid
-understanding of the module system and be able to work with scopes like a pro!
-
-[workspaces]: ch14-03-cargo-workspaces.html
+이 장을 통해 러스트 프로젝트를 더 크고, 더 체계적으로 관리할 수 있는 기반을 갖추게 될 것입니다.

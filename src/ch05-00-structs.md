@@ -1,14 +1,5 @@
-# Using Structs to Structure Related Data
+# 구조체로 관련 데이터 구조화하기
 
-A _struct_, or _structure_, is a custom data type that lets you package
-together and name multiple related values that make up a meaningful group. If
-you’re familiar with an object-oriented language, a _struct_ is like an
-object’s data attributes. In this chapter, we’ll compare and contrast tuples
-with structs to build on what you already know and demonstrate when structs are
-a better way to group data.
+_구조체(struct)_는 여러 관련 값을 하나의 의미 있는 그룹으로 묶어 이름을 붙일 수 있는 사용자 정의 데이터 타입입니다. 객체지향 언어에 익숙하다면, _구조체_는 객체의 데이터 속성과 비슷하다고 생각할 수 있습니다. 이번 장에서는 튜플과 구조체를 비교하며, 이미 알고 있는 내용을 바탕으로 언제 구조체가 데이터를 묶는 데 더 좋은 방법이 되는지 보여드릴 것입니다.
 
-We’ll demonstrate how to define and instantiate structs. We’ll discuss how to
-define associated functions, especially the kind of associated functions called
-_methods_, to specify behavior associated with a struct type. Structs and enums
-(discussed in Chapter 6) are the building blocks for creating new types in your
-program’s domain to take full advantage of Rust’s compile-time type checking.
+구조체를 정의하고 인스턴스화하는 방법을 설명합니다. 구조체 타입에 연관된 동작을 지정하기 위해 연관 함수, 특히 _메서드_라 불리는 연관 함수의 정의 방법을 다룹니다. 구조체와 열거형(6장에서 다룸)은 러스트 프로그램의 도메인에 맞는 새로운 타입을 만들고, 러스트의 컴파일 타임 타입 검사의 이점을 최대한 활용하는 데 핵심적인 빌딩 블록입니다.

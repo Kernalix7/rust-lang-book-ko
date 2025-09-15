@@ -1,34 +1,20 @@
-## The Slice Type
+## 슬라이스 타입
 
-_Slices_ let you reference a contiguous sequence of elements in a
-[collection](ch08-00-common-collections.md)<!-- ignore -->. A slice is a kind
-of reference, so it does not have ownership.
+_슬라이스(slice)_는 [컬렉션](ch08-00-common-collections.md)<!-- ignore -->에서 연속된 요소 집합을 참조할 수 있게 해줍니다. 슬라이스는 참조의 일종이므로, 소유권을 가지지 않습니다.
 
-Here’s a small programming problem: write a function that takes a string of
-words separated by spaces and returns the first word it finds in that string.
-If the function doesn’t find a space in the string, the whole string must be
-one word, so the entire string should be returned.
+간단한 프로그래밍 문제를 생각해 봅시다: 공백으로 구분된 단어들로 이루어진 문자열을 받아, 그 문자열에서 첫 번째 단어를 반환하는 함수를 작성하세요. 만약 문자열에 공백이 없다면, 전체 문자열이 하나의 단어이므로 전체 문자열을 반환해야 합니다.
 
-> Note: For the purposes of introducing string slices, we are assuming ASCII
-> only in this section; a more thorough discussion of UTF-8 handling is in the
-> [“Storing UTF-8 Encoded Text with Strings”][strings]<!-- ignore --> section
-> of Chapter 8.
+> 참고: 이 섹션에서는 문자열 슬라이스를 소개하기 위해 ASCII만 다룹니다. UTF-8 처리에 대한 더 자세한 내용은 [8장 "UTF-8 인코딩된 텍스트를 문자열로 저장하기"][strings]<!-- ignore -->에서 다룹니다.
 
-Let’s work through how we’d write the signature of this function without using
-slices, to understand the problem that slices will solve:
+슬라이스 없이 이 함수의 시그니처를 어떻게 작성할지 고민해 봅시다. 슬라이스가 해결해 줄 문제를 이해하기 위해서입니다:
 
 ```rust,ignore
 fn first_word(s: &String) -> ?
 ```
 
-The `first_word` function has a parameter of type `&String`. We don’t need
-ownership, so this is fine. (In idiomatic Rust, functions do not take ownership
-of their arguments unless they need to, and the reasons for that will become
-clear as we keep going.) But what should we return? We don’t really have a way
-to talk about *part* of a string. However, we could return the index of the end
-of the word, indicated by a space. Let’s try that, as shown in Listing 4-7.
+`first_word` 함수는 `&String` 타입의 매개변수를 받습니다. 소유권이 필요 없으므로 괜찮습니다. (러스트의 관례는 함수가 소유권이 필요하지 않으면 소유권을 받지 않는다는 점입니다. 이 이유는 앞으로 더 명확해질 것입니다.) 하지만 반환값은 어떻게 해야 할까요? 문자열의 _일부_를 반환하는 방법이 없습니다. 대신, 공백의 인덱스를 반환할 수 있습니다. 리스트 4-7을 참고하세요.
 
-<Listing number="4-7" file-name="src/main.rs" caption="The `first_word` function that returns a byte index value into the `String` parameter">
+<Listing number="4-7" file-name="src/main.rs" caption="`first_word` 함수가 `String` 매개변수의 바이트 인덱스 값을 반환하는 예시">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:here}}
@@ -36,50 +22,31 @@ of the word, indicated by a space. Let’s try that, as shown in Listing 4-7.
 
 </Listing>
 
-Because we need to go through the `String` element by element and check whether
-a value is a space, we’ll convert our `String` to an array of bytes using the
-`as_bytes` method.
+`String`을 바이트 배열로 변환하여 각 요소를 검사해야 하므로, `as_bytes` 메서드를 사용합니다.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:as_bytes}}
 ```
 
-Next, we create an iterator over the array of bytes using the `iter` method:
+다음으로, 바이트 배열에 대해 `iter` 메서드로 이터레이터를 만듭니다:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:iter}}
 ```
 
-We’ll discuss iterators in more detail in [Chapter 13][ch13]<!-- ignore -->.
-For now, know that `iter` is a method that returns each element in a collection
-and that `enumerate` wraps the result of `iter` and returns each element as
-part of a tuple instead. The first element of the tuple returned from
-`enumerate` is the index, and the second element is a reference to the element.
-This is a bit more convenient than calculating the index ourselves.
+이터레이터에 대해서는 [13장][ch13]<!-- ignore -->에서 더 자세히 다룹니다. 지금은 `iter`가 컬렉션의 각 요소를 반환한다는 점만 기억하세요. `enumerate`는 이터레이터의 결과를 튜플로 감싸서, 각 요소의 인덱스와 해당 요소에 대한 참조를 반환합니다. 튜플의 첫 번째 요소는 인덱스, 두 번째 요소는 요소의 참조입니다. 직접 인덱스를 계산하는 것보다 편리합니다.
 
-Because the `enumerate` method returns a tuple, we can use patterns to
-destructure that tuple. We’ll be discussing patterns more in [Chapter
-6][ch6]<!-- ignore -->. In the `for` loop, we specify a pattern that has `i`
-for the index in the tuple and `&item` for the single byte in the tuple.
-Because we get a reference to the element from `.iter().enumerate()`, we use
-`&` in the pattern.
+`enumerate`가 튜플을 반환하므로, 패턴을 사용해 튜플을 분해할 수 있습니다. 패턴에 대해서는 [6장][ch6]<!-- ignore -->에서 더 다룹니다. `for` 루프에서는 인덱스는 `i`, 바이트는 `&item`으로 패턴을 지정합니다. `.iter().enumerate()`에서 요소의 참조를 받으므로, 패턴에 `&`를 붙입니다.
 
-Inside the `for` loop, we search for the byte that represents the space by
-using the byte literal syntax. If we find a space, we return the position.
-Otherwise, we return the length of the string by using `s.len()`.
+루프 내부에서는 바이트 리터럴 문법을 사용해 공백 바이트를 찾습니다. 공백을 찾으면 해당 위치를 반환하고, 그렇지 않으면 `s.len()`으로 문자열의 길이를 반환합니다.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:inside_for}}
 ```
 
-We now have a way to find out the index of the end of the first word in the
-string, but there’s a problem. We’re returning a `usize` on its own, but it’s
-only a meaningful number in the context of the `&String`. In other words,
-because it’s a separate value from the `String`, there’s no guarantee that it
-will still be valid in the future. Consider the program in Listing 4-8 that
-uses the `first_word` function from Listing 4-7.
+이제 문자열에서 첫 번째 단어의 끝 인덱스를 찾을 수 있게 되었습니다. 하지만 문제가 있습니다. 반환값이 `usize`이므로, 이 값은 `&String`과 연관된 맥락에서만 의미가 있습니다. 즉, `String`과 별개의 값이므로, 미래에도 여전히 유효하다는 보장이 없습니다. 리스트 4-8의 프로그램을 보면, 리스트 4-7의 `first_word` 함수를 사용한 뒤, `String`의 내용을 변경합니다.
 
-<Listing number="4-8" file-name="src/main.rs" caption="Storing the result from calling the `first_word` function and then changing the `String` contents">
+<Listing number="4-8" file-name="src/main.rs" caption="`first_word` 함수의 결과를 저장한 뒤 `String` 내용을 변경하는 예시">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-08/src/main.rs:here}}
@@ -87,47 +54,29 @@ uses the `first_word` function from Listing 4-7.
 
 </Listing>
 
-This program compiles without any errors and would also do so if we used `word`
-after calling `s.clear()`. Because `word` isn’t connected to the state of `s`
-at all, `word` still contains the value `5`. We could use that value `5` with
-the variable `s` to try to extract the first word out, but this would be a bug
-because the contents of `s` have changed since we saved `5` in `word`.
+이 프로그램은 에러 없이 컴파일되며, `s.clear()` 이후에도 `word`를 사용할 수 있습니다. `word`는 여전히 값 `5`를 가지고 있습니다. 이 값을 `s`와 함께 사용해 첫 번째 단어를 추출하려 하면, 버그가 발생합니다. 왜냐하면 `s`의 내용이 변경된 뒤에도 `word`는 이전 인덱스를 그대로 가지고 있기 때문입니다.
 
-Having to worry about the index in `word` getting out of sync with the data in
-`s` is tedious and error prone! Managing these indices is even more brittle if
-we write a `second_word` function. Its signature would have to look like this:
+이처럼 `word`의 인덱스가 `s`의 데이터와 동기화되지 않는 문제를 관리하는 것은 번거롭고 오류가 발생하기 쉽습니다. 만약 `second_word` 함수를 작성한다면, 시그니처는 다음과 같아야 합니다:
 
 ```rust,ignore
 fn second_word(s: &String) -> (usize, usize) {
 ```
 
-Now we’re tracking a starting _and_ an ending index, and we have even more
-values that were calculated from data in a particular state but aren’t tied to
-that state at all. We have three unrelated variables floating around that need
-to be kept in sync.
+이제 시작 인덱스와 끝 인덱스를 모두 추적해야 하며, 데이터의 특정 상태에서 계산된 값이 데이터와 연결되어 있지 않습니다. 서로 연관 없는 세 개의 변수를 계속 동기화해야 합니다.
 
-Luckily, Rust has a solution to this problem: string slices.
+다행히도, 러스트에는 이 문제를 해결하는 기능이 있습니다: 문자열 슬라이스입니다.
 
-### String Slices
+### 문자열 슬라이스
 
-A _string slice_ is a reference to a contiguous sequence of the elements of a
-`String`, and it looks like this:
+_문자열 슬라이스(string slice)_는 `String`의 연속된 일부 요소를 참조하는 것으로, 아래와 같이 작성합니다:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-17-slice/src/main.rs:here}}
 ```
 
-Rather than a reference to the entire `String`, `hello` is a reference to a
-portion of the `String`, specified in the extra `[0..5]` bit. We create slices
-using a range within brackets by specifying `[starting_index..ending_index]`,
-where _`starting_index`_ is the first position in the slice and _`ending_index`_
-is one more than the last position in the slice. Internally, the slice data
-structure stores the starting position and the length of the slice, which
-corresponds to _`ending_index`_ minus _`starting_index`_. So, in the case of `let
-world = &s[6..11];`, `world` would be a slice that contains a pointer to the
-byte at index 6 of `s` with a length value of `5`.
+전체 `String`에 대한 참조 대신, `hello`는 `String`의 일부를 참조합니다. `[0..5]` 부분이 슬라이스의 범위를 지정합니다. 슬라이스는 대괄호 안에 `[시작 인덱스..끝 인덱스]` 형태로 작성합니다. _시작 인덱스_는 슬라이스의 첫 번째 위치이고, _끝 인덱스_는 마지막 위치보다 1 큰 값입니다. 내부적으로 슬라이스는 시작 위치와 길이를 저장합니다. 예를 들어, `let world = &s[6..11];`에서 `world`는 `s`의 6번 인덱스부터 5개의 바이트를 가리키는 슬라이스입니다.
 
-Figure 4-7 shows this in a diagram.
+아래 그림 4-7은 이를 시각적으로 보여줍니다.
 
 <img alt="Three tables: a table representing the stack data of s, which points
 to the byte at index 0 in a table of the string data &quot;hello world&quot; on
@@ -135,11 +84,9 @@ the heap. The third table rep-resents the stack data of the slice world, which
 has a length value of 5 and points to byte 6 of the heap data table."
 src="img/trpl04-07.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-7: String slice referring to part of a
-`String`</span>
+<span class="caption">그림 4-7: `String`의 일부를 참조하는 문자열 슬라이스</span>
 
-With Rust’s `..` range syntax, if you want to start at index 0, you can drop
-the value before the two periods. In other words, these are equal:
+러스트의 `..` 범위 문법을 활용하면, 0번 인덱스부터 시작할 때는 앞의 값을 생략할 수 있습니다. 즉, 아래 두 코드는 동일합니다:
 
 ```rust
 let s = String::from("hello");
@@ -148,8 +95,7 @@ let slice = &s[0..2];
 let slice = &s[..2];
 ```
 
-By the same token, if your slice includes the last byte of the `String`, you
-can drop the trailing number. That means these are equal:
+마찬가지로, 슬라이스가 문자열의 마지막 바이트까지 포함한다면, 끝 인덱스도 생략할 수 있습니다. 즉, 아래 두 코드는 동일합니다:
 
 ```rust
 let s = String::from("hello");
@@ -160,8 +106,7 @@ let slice = &s[3..len];
 let slice = &s[3..];
 ```
 
-You can also drop both values to take a slice of the entire string. So these
-are equal:
+두 값 모두 생략하면 전체 문자열의 슬라이스가 됩니다. 즉, 아래 두 코드는 동일합니다:
 
 ```rust
 let s = String::from("hello");
@@ -172,12 +117,9 @@ let slice = &s[0..len];
 let slice = &s[..];
 ```
 
-> Note: String slice range indices must occur at valid UTF-8 character
-> boundaries. If you attempt to create a string slice in the middle of a
-> multibyte character, your program will exit with an error.
+> 참고: 문자열 슬라이스의 범위 인덱스는 반드시 유효한 UTF-8 문자 경계여야 합니다. 만약 멀티바이트 문자 중간에서 슬라이스를 만들려고 하면, 프로그램은 에러와 함께 종료됩니다.
 
-With all this information in mind, let’s rewrite `first_word` to return a
-slice. The type that signifies “string slice” is written as `&str`:
+이제 이 정보를 바탕으로, `first_word`를 슬라이스를 반환하도록 다시 작성해 봅시다. 문자열 슬라이스 타입은 `&str`로 표기합니다:
 
 <Listing file-name="src/main.rs">
 
@@ -187,30 +129,17 @@ slice. The type that signifies “string slice” is written as `&str`:
 
 </Listing>
 
-We get the index for the end of the word the same way we did in Listing 4-7, by
-looking for the first occurrence of a space. When we find a space, we return a
-string slice using the start of the string and the index of the space as the
-starting and ending indices.
+공백의 인덱스를 찾는 방식은 이전과 동일합니다. 공백을 찾으면, 문자열의 시작부터 공백 인덱스까지 슬라이스를 반환합니다.
 
-Now when we call `first_word`, we get back a single value that is tied to the
-underlying data. The value is made up of a reference to the starting point of
-the slice and the number of elements in the slice.
+이제 `first_word`를 호출하면, 데이터와 연결된 단일 값을 반환받게 됩니다. 반환값은 슬라이스의 시작 위치와 길이로 구성됩니다.
 
-Returning a slice would also work for a `second_word` function:
+슬라이스를 반환하는 방식은 `second_word` 함수에도 적용할 수 있습니다:
 
 ```rust,ignore
 fn second_word(s: &String) -> &str {
 ```
 
-We now have a straightforward API that’s much harder to mess up because the
-compiler will ensure the references into the `String` remain valid. Remember
-the bug in the program in Listing 4-8, when we got the index to the end of the
-first word but then cleared the string so our index was invalid? That code was
-logically incorrect but didn’t show any immediate errors. The problems would
-show up later if we kept trying to use the first word index with an emptied
-string. Slices make this bug impossible and let us know we have a problem with
-our code much sooner. Using the slice version of `first_word` will throw a
-compile-time error:
+이제 API가 훨씬 명확해졌으며, 컴파일러가 슬라이스가 참조하는 데이터가 유효한지 보장해 줍니다. 리스트 4-8의 버그를 기억하세요. 첫 번째 단어의 끝 인덱스를 얻은 뒤, 문자열을 비우면 인덱스가 무효화됩니다. 이 코드는 논리적으로 잘못되었지만, 즉시 에러가 발생하지는 않습니다. 슬라이스를 사용하면 이런 버그가 컴파일 타임에 바로 잡힙니다. 슬라이스 버전의 `first_word`를 사용하면 컴파일 타임 에러가 발생합니다:
 
 <Listing file-name="src/main.rs">
 
@@ -220,52 +149,39 @@ compile-time error:
 
 </Listing>
 
-Here’s the compiler error:
+컴파일러 에러는 다음과 같습니다:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/no-listing-19-slice-error/output.txt}}
 ```
 
-Recall from the borrowing rules that if we have an immutable reference to
-something, we cannot also take a mutable reference. Because `clear` needs to
-truncate the `String`, it needs to get a mutable reference. The `println!`
-after the call to `clear` uses the reference in `word`, so the immutable
-reference must still be active at that point. Rust disallows the mutable
-reference in `clear` and the immutable reference in `word` from existing at the
-same time, and compilation fails. Not only has Rust made our API easier to use,
-but it has also eliminated an entire class of errors at compile time!
+빌림 규칙을 기억하세요. 불변 참조가 있으면, 가변 참조를 동시에 만들 수 없습니다. `clear`는 `String`을 변경해야 하므로, 가변 참조가 필요합니다. `println!`에서 `word`의 참조를 사용하므로, 불변 참조가 아직 유효합니다. 러스트는 `clear`의 가변 참조와 `word`의 불변 참조가 동시에 존재하는 것을 허용하지 않으므로, 컴파일이 실패합니다. 러스트는 API를 더 쉽게 사용할 수 있게 해줄 뿐만 아니라, 컴파일 타임에 오류를 제거해 줍니다!
 
 <!-- Old heading. Do not remove or links may break. -->
 
 <a id="string-literals-are-slices"></a>
 
-#### String Literals as Slices
+#### 문자열 리터럴도 슬라이스다
 
-Recall that we talked about string literals being stored inside the binary. Now
-that we know about slices, we can properly understand string literals:
+앞서 문자열 리터럴이 바이너리 내부에 저장된다고 했습니다. 이제 슬라이스를 알았으니, 문자열 리터럴을 제대로 이해할 수 있습니다:
 
 ```rust
 let s = "Hello, world!";
 ```
 
-The type of `s` here is `&str`: it’s a slice pointing to that specific point of
-the binary. This is also why string literals are immutable; `&str` is an
-immutable reference.
+여기서 `s`의 타입은 `&str`입니다. 즉, 바이너리의 특정 위치를 가리키는 슬라이스입니다. 그래서 문자열 리터럴은 불변입니다. `&str`은 불변 참조이기 때문입니다.
 
-#### String Slices as Parameters
+#### 함수 매개변수로 문자열 슬라이스 사용하기
 
-Knowing that you can take slices of literals and `String` values leads us to
-one more improvement on `first_word`, and that’s its signature:
+리터럴과 `String` 값 모두에서 슬라이스를 만들 수 있다는 점을 알았다면, `first_word`의 시그니처를 더 개선할 수 있습니다:
 
 ```rust,ignore
 fn first_word(s: &String) -> &str {
 ```
 
-A more experienced Rustacean would write the signature shown in Listing 4-9
-instead because it allows us to use the same function on both `&String` values
-and `&str` values.
+러스트에 익숙한 사람이라면, 리스트 4-9처럼 시그니처를 작성할 것입니다. 이렇게 하면 `&String`과 `&str` 모두에 대해 같은 함수를 사용할 수 있습니다.
 
-<Listing number="4-9" caption="Improving the `first_word` function by using a string slice for the type of the `s` parameter">
+<Listing number="4-9" caption="매개변수 타입을 문자열 슬라이스로 개선한 `first_word` 함수">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-09/src/main.rs:here}}
@@ -273,14 +189,9 @@ and `&str` values.
 
 </Listing>
 
-If we have a string slice, we can pass that directly. If we have a `String`, we
-can pass a slice of the `String` or a reference to the `String`. This
-flexibility takes advantage of _deref coercions_, a feature we will cover in the
-[“Implicit Deref Coercions with Functions and
-Methods”][deref-coercions]<!--ignore--> section of Chapter 15.
+문자열 슬라이스가 있다면 바로 넘길 수 있습니다. `String`이 있다면, `String`의 슬라이스나 참조를 넘길 수 있습니다. 이 유연성은 _역참조 강제(deref coercion)_라는 기능 덕분입니다. 역참조 강제에 대해서는 [15장 "함수와 메서드에서의 암묵적 역참조 강제"][deref-coercions]<!--ignore-->에서 다룹니다.
 
-Defining a function to take a string slice instead of a reference to a `String`
-makes our API more general and useful without losing any functionality:
+함수의 매개변수를 `String` 참조 대신 문자열 슬라이스로 지정하면, API가 더 일반적이고 유용해집니다. 기능은 그대로 유지됩니다:
 
 <Listing file-name="src/main.rs">
 
@@ -290,17 +201,15 @@ makes our API more general and useful without losing any functionality:
 
 </Listing>
 
-### Other Slices
+### 다른 슬라이스 타입
 
-String slices, as you might imagine, are specific to strings. But there’s a
-more general slice type too. Consider this array:
+문자열 슬라이스는 문자열에 특화된 기능입니다. 하지만 더 일반적인 슬라이스 타입도 있습니다. 예를 들어, 아래와 같은 배열이 있다고 합시다:
 
 ```rust
 let a = [1, 2, 3, 4, 5];
 ```
 
-Just as we might want to refer to part of a string, we might want to refer to
-part of an array. We’d do so like this:
+문자열의 일부를 참조하듯, 배열의 일부를 참조할 수도 있습니다:
 
 ```rust
 let a = [1, 2, 3, 4, 5];
@@ -310,22 +219,13 @@ let slice = &a[1..3];
 assert_eq!(slice, &[2, 3]);
 ```
 
-This slice has the type `&[i32]`. It works the same way as string slices do, by
-storing a reference to the first element and a length. You’ll use this kind of
-slice for all sorts of other collections. We’ll discuss these collections in
-detail when we talk about vectors in Chapter 8.
+이 슬라이스의 타입은 `&[i32]`입니다. 문자열 슬라이스와 마찬가지로, 첫 번째 요소의 참조와 길이를 저장합니다. 이런 슬라이스는 다양한 컬렉션에서 사용할 수 있습니다. 컬렉션에 대해서는 8장에서 벡터를 다루며 더 자세히 설명합니다.
 
-## Summary
+## 요약
 
-The concepts of ownership, borrowing, and slices ensure memory safety in Rust
-programs at compile time. The Rust language gives you control over your memory
-usage in the same way as other systems programming languages, but having the
-owner of data automatically clean up that data when the owner goes out of scope
-means you don’t have to write and debug extra code to get this control.
+소유권, 빌림, 슬라이스 개념은 러스트 프로그램에서 컴파일 타임에 메모리 안전성을 보장합니다. 러스트는 다른 시스템 프로그래밍 언어처럼 메모리 사용을 직접 제어할 수 있게 해주지만, 소유자가 스코프를 벗어나면 데이터를 자동으로 정리해 주므로, 직접 코드를 작성하고 디버깅할 필요가 없습니다.
 
-Ownership affects how lots of other parts of Rust work, so we’ll talk about
-these concepts further throughout the rest of the book. Let’s move on to
-Chapter 5 and look at grouping pieces of data together in a `struct`.
+소유권은 러스트의 여러 부분에 영향을 미치므로, 앞으로도 계속 다루게 될 것입니다. 이제 5장으로 넘어가서, 여러 데이터 조각을 하나의 구조체로 묶는 방법을 배워봅시다.
 
 [ch13]: ch13-02-iterators.html
 [ch6]: ch06-02-match.html#patterns-that-bind-to-values

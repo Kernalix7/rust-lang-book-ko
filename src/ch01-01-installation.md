@@ -1,154 +1,108 @@
-## Installation
+## 설치하기
 
-The first step is to install Rust. We’ll download Rust through `rustup`, a
-command line tool for managing Rust versions and associated tools. You’ll need
-an internet connection for the download.
+첫 번째 단계는 러스트를 설치하는 것입니다. 러스트 버전과 관련 도구를 관리하는 명령줄 도구인 `rustup`을 통해 러스트를 다운로드할 것입니다. 다운로드를 위해서는 인터넷 연결이 필요합니다.
 
-> Note: If you prefer not to use `rustup` for some reason, please see the
-> [Other Rust Installation Methods page][otherinstall] for more options.
+> 참고: 어떤 이유로 `rustup`을 사용하고 싶지 않다면, [다른 러스트 설치 방법 페이지][otherinstall]에서 더 많은 옵션을 확인해주세요.
 
-The following steps install the latest stable version of the Rust compiler.
-Rust’s stability guarantees ensure that all the examples in the book that
-compile will continue to compile with newer Rust versions. The output might
-differ slightly between versions because Rust often improves error messages and
-warnings. In other words, any newer, stable version of Rust you install using
-these steps should work as expected with the content of this book.
+다음 단계는 러스트 컴파일러의 최신 안정 버전을 설치합니다. 러스트의 안정성 보장은 책의 모든 예제가 최신 러스트 버전에서도 계속해서 컴파일될 수 있도록 합니다. 출력은 버전 간에 약간 다를 수 있는데, 이는 러스트가 종종 오류 메시지와 경고를 개선하기 때문입니다. 즉, 이 단계에 따라 설치한 최신 안정 버전의 러스트는 이 책의 내용과 예상대로 작동할 것입니다.
 
-> ### Command Line Notation
+> ### 명령줄 표기법
 >
-> In this chapter and throughout the book, we’ll show some commands used in the
-> terminal. Lines that you should enter in a terminal all start with `$`. You
-> don’t need to type the `$` character; it’s the command line prompt shown to
-> indicate the start of each command. Lines that don’t start with `$` typically
-> show the output of the previous command. Additionally, PowerShell-specific
-> examples will use `>` rather than `$`.
+> 이 장과 책 전체에서 터미널에서 사용되는 몇 가지 명령어를 보여드릴 것입니다. 터미널에 입력해야 하는 줄은 모두 `$`로 시작합니다. `$` 문자를 직접 입력할 필요는 없습니다; 이는 각 명령어의 시작을 나타내는 명령줄 프롬프트입니다. `$`로 시작하지 않는 줄은 일반적으로 이전 명령어의 출력을 보여줍니다. 또한 PowerShell 특화 예제는 `$` 대신 `>`를 사용합니다.
 
-### Installing `rustup` on Linux or macOS
+### Linux나 macOS에서 `rustup` 설치하기
 
-If you’re using Linux or macOS, open a terminal and enter the following command:
+Linux나 macOS를 사용 중이라면, 터미널을 열고 다음 명령어를 입력하세요:
 
 ```console
 $ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 ```
 
-The command downloads a script and starts the installation of the `rustup`
-tool, which installs the latest stable version of Rust. You might be prompted
-for your password. If the install is successful, the following line will appear:
+이 명령어는 스크립트를 다운로드하고 `rustup` 도구의 설치를 시작하며, 이 도구는 최신 안정 버전의 러스트를 설치합니다. 비밀번호를 입력하라는 메시지가 표시될 수 있습니다. 설치가 성공하면 다음과 같은 줄이 나타납니다:
 
 ```text
 Rust is installed now. Great!
 ```
 
-You will also need a _linker_, which is a program that Rust uses to join its
-compiled outputs into one file. It is likely you already have one. If you get
-linker errors, you should install a C compiler, which will typically include a
-linker. A C compiler is also useful because some common Rust packages depend on
-C code and will need a C compiler.
+또한 _링커_가 필요할 것입니다. 링커는 러스트가 컴파일된 출력을 하나의 파일로 결합하는 데 사용하는 프로그램입니다. 이미 링커를 가지고 있을 가능성이 높습니다. 링커 오류가 발생하면 C 컴파일러를 설치해야 합니다. C 컴파일러에는 일반적으로 링커가 포함되어 있습니다. 또한 일부 일반적인 러스트 패키지는 C 코드에 의존하므로 C 컴파일러가 유용합니다.
 
-On macOS, you can get a C compiler by running:
+macOS에서는 다음을 실행하여 C 컴파일러를 얻을 수 있습니다:
 
 ```console
 $ xcode-select --install
 ```
 
-Linux users should generally install GCC or Clang, according to their
-distribution’s documentation. For example, if you use Ubuntu, you can install
-the `build-essential` package.
+Linux 사용자는 일반적으로 배포판의 설명서에 따라 GCC 또는 Clang을 설치해야 합니다. 예를 들어, Ubuntu를 사용하는 경우 `build-essential` 패키지를 설치할 수 있습니다.
 
-### Installing `rustup` on Windows
+### Windows에서 `rustup` 설치하기
 
-On Windows, go to [https://www.rust-lang.org/tools/install][install] and follow
-the instructions for installing Rust. At some point in the installation, you’ll
-be prompted to install Visual Studio. This provides a linker and the native
-libraries needed to compile programs. If you need more help with this step, see
-[https://rust-lang.github.io/rustup/installation/windows-msvc.html][msvc]
+Windows에서는 [https://www.rust-lang.org/tools/install][install]로 이동하여 러스트 설치 지침을 따르세요. 설치 과정 중 Visual Studio를 설치하라는 메시지가 표시될 것입니다. 이것은 링커와 프로그램 컴파일에 필요한 네이티브 라이브러리를 제공합니다. 이 단계에 도움이 더 필요하시면, [https://rust-lang.github.io/rustup/installation/windows-msvc.html][msvc]를 참조하세요.
 
-The rest of this book uses commands that work in both _cmd.exe_ and PowerShell.
-If there are specific differences, we’ll explain which to use.
+이 책의 나머지 부분에서는 _cmd.exe_와 PowerShell 모두에서 작동하는 명령어를 사용합니다. 특정한 차이가 있다면 어떤 것을 사용해야 하는지 설명하겠습니다.
 
-### Troubleshooting
+### 문제 해결하기
 
-To check whether you have Rust installed correctly, open a shell and enter this
-line:
+러스트가 올바르게 설치되었는지 확인하려면 쉘을 열고 다음 줄을 입력하세요:
 
 ```console
 $ rustc --version
 ```
 
-You should see the version number, commit hash, and commit date for the latest
-stable version that has been released, in the following format:
+다음 형식으로 출시된 최신 안정 버전의 버전 번호, 커밋 해시 및 커밋 날짜가 표시되어야 합니다:
 
 ```text
 rustc x.y.z (abcabcabc yyyy-mm-dd)
 ```
 
-If you see this information, you have installed Rust successfully! If you don’t
-see this information, check that Rust is in your `%PATH%` system variable as
-follows.
+이 정보가 보인다면, 러스트를 성공적으로 설치한 것입니다! 이 정보가 보이지 않는다면, 러스트가 `%PATH%` 시스템 변수에 있는지 다음과 같이 확인하세요.
 
-In Windows CMD, use:
+Windows CMD에서는 다음을 사용하세요:
 
 ```console
 > echo %PATH%
 ```
 
-In PowerShell, use:
+PowerShell에서는 다음을 사용하세요:
 
 ```powershell
 > echo $env:Path
 ```
 
-In Linux and macOS, use:
+Linux와 macOS에서는 다음을 사용하세요:
 
 ```console
 $ echo $PATH
 ```
 
-If that’s all correct and Rust still isn’t working, there are a number of
-places you can get help. Find out how to get in touch with other Rustaceans (a
-silly nickname we call ourselves) on [the community page][community].
+모든 것이 올바르게 되어 있는데도 러스트가 여전히 작동하지 않는다면, 도움을 받을 수 있는 곳이 많이 있습니다. 다른 러스타시안들(우리가 우리 자신을 부르는 재미있는 별명)과 연락하는 방법은 [커뮤니티 페이지][community]에서 확인하세요.
 
-### Updating and Uninstalling
+### 업데이트 및 제거하기
 
-Once Rust is installed via `rustup`, updating to a newly released version is
-easy. From your shell, run the following update script:
+`rustup`을 통해 러스트가 설치되면 새로 출시된 버전으로 업데이트하는 것은 쉽습니다. 쉘에서 다음 업데이트 스크립트를 실행하세요:
 
 ```console
 $ rustup update
 ```
 
-To uninstall Rust and `rustup`, run the following uninstall script from your
-shell:
+러스트와 `rustup`을 제거하려면 쉘에서 다음 제거 스크립트를 실행하세요:
 
 ```console
 $ rustup self uninstall
 ```
 
-### Local Documentation
+### 로컬 문서
 
-The installation of Rust also includes a local copy of the documentation so
-that you can read it offline. Run `rustup doc` to open the local documentation
-in your browser.
+러스트 설치에는 오프라인으로 읽을 수 있는 로컬 문서 복사본도 포함되어 있습니다. `rustup doc`을 실행하여 브라우저에서 로컬 문서를 열어보세요.
 
-Any time a type or function is provided by the standard library and you’re not
-sure what it does or how to use it, use the application programming interface
-(API) documentation to find out!
+표준 라이브러리가 제공하는 타입이나 함수가 무엇을 하는지 또는 어떻게 사용하는지 확실하지 않을 때마다, 애플리케이션 프로그래밍 인터페이스(API) 문서를 참고하여 알아보세요!
 
-### Text Editors and Integrated Development Environments
+### 텍스트 에디터와 통합 개발 환경
 
-This book makes no assumptions about what tools you use to author Rust code.
-Just about any text editor will get the job done! However, many text editors and
-integrated development environments (IDEs) have built-in support for Rust. You
-can always find a fairly current list of many editors and IDEs on [the tools
-page][tools] on the Rust website.
+이 책은 러스트 코드를 작성하기 위해 어떤 도구를 사용하는지에 대해 어떠한 가정도 하지 않습니다. 거의 모든 텍스트 에디터가 이 작업을 수행할 수 있습니다! 그러나 많은 텍스트 에디터와 통합 개발 환경(IDE)은 러스트를 내장 지원합니다. 러스트 웹사이트의 [도구 페이지][tools]에서 많은 에디터와 IDE의 꽤 최신 목록을 항상 찾을 수 있습니다.
 
-### Working Offline with This Book
+### 이 책과 오프라인으로 작업하기
 
-In several examples, we will use Rust packages beyond the standard library. To
-work through those examples, you will either need to have an internet connection
-or to have downloaded those dependencies ahead of time. To download the
-dependencies ahead of time, you can run the following commands. (We’ll explain
-what `cargo` is and what each of these commands does in detail later.)
+여러 예제에서, 우리는 표준 라이브러리 외의 러스트 패키지를 사용할 것입니다. 이러한 예제를 진행하려면 인터넷 연결이 있어야 하거나 미리 해당 종속성을 다운로드해야 합니다. 종속성을 미리 다운로드하려면 다음 명령을 실행하세요. (`cargo`가 무엇인지와 각 명령이 무엇을 하는지는 나중에 자세히 설명할 것입니다.)
 
 ```console
 $ cargo new get-dependencies
@@ -156,11 +110,7 @@ $ cd get-dependencies
 $ cargo add rand@0.8.5 trpl@0.2.0
 ```
 
-This will cache the downloads for these packages so you will not need to
-download them later. Once you have run this command, you do not need to keep the
-`get-dependencies` folder. If you have run this command, you can use the
-`--offline` flag with all `cargo` commands in the rest of the book to use these
-cached versions instead of attempting to use the network. 
+이렇게 하면 이 패키지들에 대한 다운로드가 캐시되어 나중에 다운로드할 필요가 없습니다. 이 명령을 실행한 후에는 `get-dependencies` 폴더를 유지할 필요가 없습니다. 이 명령을 실행했다면, 책의 나머지 부분에서 모든 `cargo` 명령에 `--offline` 플래그를 사용하여 네트워크를 사용하는 대신 이러한 캐시된 버전을 사용할 수 있습니다.
 
 [otherinstall]: https://forge.rust-lang.org/infra/other-installation-methods.html
 [install]: https://www.rust-lang.org/tools/install

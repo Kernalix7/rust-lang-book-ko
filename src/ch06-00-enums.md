@@ -1,11 +1,7 @@
-# Enums and Pattern Matching
+# 열거형과 패턴 매칭
 
-In this chapter, we’ll look at _enumerations_, also referred to as _enums_.
-Enums allow you to define a type by enumerating its possible _variants_. First
-we’ll define and use an enum to show how an enum can encode meaning along with
-data. Next, we’ll explore a particularly useful enum, called `Option`, which
-expresses that a value can be either something or nothing. Then we’ll look at
-how pattern matching in the `match` expression makes it easy to run different
-code for different values of an enum. Finally, we’ll cover how the `if let`
-construct is another convenient and concise idiom available to handle enums in
-your code.
+이번 장에서는 러스트의 또 다른 사용자 정의 타입인 _열거형(enum)_을 소개합니다. 열거형은 여러 종류의 값을 하나의 타입으로 묶어, 각 값에 이름을 붙여 구분할 수 있게 해줍니다. 열거형은 다양한 상황을 명확하게 표현할 수 있는 강력한 도구입니다.
+
+또한, 열거형과 함께 자주 사용되는 _패턴 매칭(pattern matching)_ 기능도 배웁니다. 패턴 매칭은 열거형의 각 변형에 따라 코드를 분기할 수 있게 해주며, 러스트의 안전성과 표현력을 크게 높여줍니다.
+
+이번 장에서는 열거형을 정의하고 사용하는 방법, 그리고 `match`와 `if let`을 활용한 패턴 매칭을 다룹니다. 이를 통해 러스트에서 다양한 상황을 효과적으로 처리하는 방법을 익힐 수 있습니다.

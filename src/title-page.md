@@ -1,27 +1,17 @@
-# The Rust Programming Language
+# 러스트 프로그래밍 언어
 
-_by Steve Klabnik, Carol Nichols, and Chris Krycho, with contributions from the
-Rust Community_
+_Steve Klabnik, Carol Nichols, 그리고 Chris Krycho가 작성하고, 러스트 커뮤니티의 기여로 만들어졌습니다_
 
-This version of the text assumes you’re using Rust 1.85.0 (released 2025-02-17)
-or later with `edition = "2024"` in the Cargo.toml file of all projects to
-configure them to use Rust 2024 edition idioms. See the [“Installation” section
-of Chapter 1][install]<!-- ignore --> to install or update Rust.
+이 버전의 텍스트는 Rust 1.85.0(2025-02-17 출시) 이상을 사용하며, 모든 프로젝트의 Cargo.toml 파일에 `edition = "2024"`를 설정하여 Rust 2024 에디션 관용구를 사용하도록 구성되었다고 가정합니다. Rust를 설치하거나 업데이트하려면 [1장의 "설치" 섹션][install]<!-- ignore -->을 참조하세요.
 
-The HTML format is available online at
-[https://doc.rust-lang.org/stable/book/](https://doc.rust-lang.org/stable/book/)
-and offline with installations of Rust made with `rustup`; run `rustup doc
---book` to open.
+HTML 형식은 [https://doc.rust-lang.org/stable/book/](https://doc.rust-lang.org/stable/book/)에서 온라인으로 이용할 수 있으며, `rustup`으로 설치한 Rust에서 오프라인으로도 이용할 수 있습니다. `rustup doc --book`을 실행하여 열어보세요.
 
-Several community [translations] are also available.
+여러 커뮤니티 [번역본][translations]도 제공됩니다.
 
-This text is available in [paperback and ebook format from No Starch
-Press][nsprust].
+이 텍스트는 No Starch Press에서 [페이퍼백과 전자책 형식으로 구매 가능][nsprust]합니다.
 
 [install]: ch01-01-installation.html
 [nsprust]: https://nostarch.com/rust-programming-language-2nd-edition
 [translations]: appendix-06-translation.html
 
-> **🚨 Want a more interactive learning experience? Try out a different version
-> of the Rust Book, featuring: quizzes, highlighting, visualizations, and
-> more**: <https://rust-book.cs.brown.edu>
+> **🚨 더 상호작용이 가능한 학습 경험을 원하시나요? 퀴즈, 하이라이팅, 시각화 등의 기능이 포함된 다른 버전의 러스트 책을 사용해 보세요**: <https://rust-book.cs.brown.edu>
